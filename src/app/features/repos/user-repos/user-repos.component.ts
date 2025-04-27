@@ -66,7 +66,7 @@ export class UserReposComponent implements OnInit {
   loadRepos() {
     this.errorMsg = '';
     this.reposService.getRepos(this.username).subscribe(res => {
-      this.errorMsg = (res.length === 0) ? 'No hay repositorios o hubo un error' : '';
+      this.errorMsg = '';
       this.repos = res;
       this.languages = [...new Set(this.repos.map(r => r.language).filter(Boolean))];
       this.applyFilters();
