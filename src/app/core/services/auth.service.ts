@@ -25,8 +25,8 @@ export class AuthService {
           const data = await response.json();
           this.githubUsername = data.login;
           console.log('GitHub User:', data);
-          localStorage.setItem('githubUsername', this.githubUsername || ''); // <-- GUARDA
-          localStorage.setItem('githubUserInfo', JSON.stringify(data)); // <-- GUARDA TODO EL PERFIL
+          localStorage.setItem('githubUsername', this.githubUsername || '');
+          localStorage.setItem('githubUserInfo', JSON.stringify(data));
 
         }
         return result;

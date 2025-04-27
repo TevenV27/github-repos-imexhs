@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UserSidecarComponent } from '../user-sidecar/user-sidecar.component';
+import { Router } from '@angular/router';
+
 import { AuthService } from '../../../core/services/auth.service';
 import { ReposService } from '../repos.service';
-import { Router } from '@angular/router';
+import { UserSidecarComponent } from '../../../shared/components/user-sidecar/user-sidecar.component';
 
 @Component({
   selector: 'app-repos-list',
@@ -12,14 +13,8 @@ import { Router } from '@angular/router';
   imports: [CommonModule, FormsModule, UserSidecarComponent],
   templateUrl: './repos-list.component.html',
 })
-
-
 export class ReposListComponent implements OnInit {
   username = '';
-  name = '';
-  email = '';
-  avatar = '';
-  stars = 0;
   repos: any[] = [];
   filteredRepos: any[] = [];
   languages: string[] = [];
@@ -64,14 +59,7 @@ export class ReposListComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Extrae datos de usuario de localStorage si están disponibles
-    const userInfo = JSON.parse(localStorage.getItem('githubUserInfo') || '{}');
-    this.username = this.auth.getGitHubUsername() || userInfo.login || '';
-    this.name = userInfo.name || '';
-    this.email = userInfo.email || '';
-    this.avatar = userInfo.avatar_url || '';
-    this.stars = 0;
-
+    this.username = this.auth.getGitHubUsername() || '';
     if (this.username) {
       this.loadRepos();
     } else {
@@ -79,11 +67,10 @@ export class ReposListComponent implements OnInit {
     }
   }
 
-  async loadRepos() {
+  loadRepos() {
     this.reposService.getRepos(this.username).subscribe(res => {
       this.errorMsg = (res.length === 0) ? 'No hay repositorios o hubo un error' : '';
       this.repos = res;
-      this.stars = this.repos.reduce((sum, r) => sum + (r.stargazers_count || 0), 0);
       this.languages = [...new Set(this.repos.map(r => r.language).filter(Boolean))];
       this.applyFilters();
     });
@@ -98,34 +85,24 @@ export class ReposListComponent implements OnInit {
   async goToUser() {
     this.searchError = '';
     const username = this.searchUsername.trim();
-  
+
     if (!username) return;
-  
-    // Llama a la API de GitHub para verificar si el usuario existe
+
     try {
       const res = await fetch(`https://api.github.com/users/${username}`);
       if (!res.ok) {
         this.searchError = 'El usuario no existe en GitHub.';
         return;
       }
-      // Si existe, redirecciona
       this.router.navigate(['/user', username]);
     } catch (e) {
       this.searchError = 'Error de red de GitHub. Intenta de nuevo.';
     }
   }
+
   clearSearchError() {
     if (this.searchError) {
       this.searchError = '';
     }
   }
-
-  logout() {
-    this.auth.logout().subscribe(() => {
-      localStorage.removeItem('githubUserInfo');
-      localStorage.removeItem('githubUsername');
-      this.router.navigate(['/login']);
-    });
-  }
-  
 }

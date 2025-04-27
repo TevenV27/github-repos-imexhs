@@ -1,0 +1,84 @@
+<div
+    class="bg-white dark:bg-[#0f141c] border border-gray-500/20 dark:border-gray-800 py-8 px-4 flex flex-col items-center w-full justify-between h-full overflow-hidden">
+    <!-- Perfil -->
+    <div class="flex flex-col items-center gap-4 w-full">
+        <!-- Avatar y estrellas -->
+        <div class="relative">
+            <img [src]="avatar"
+                class="w-24 h-24 md:w-28 md:h-28 rounded-full border-4 border-white shadow-md ring-2 ring-gray-300 dark:ring-gray-700 object-cover transition-transform duration-200 hover:scale-105"
+                alt="Avatar" />
+            <!-- Badge estrellas -->
+            <span
+                class="absolute -bottom-2 -right-2 bg-yellow-400 text-white px-2 py-0.5 rounded-full flex items-center gap-1 shadow font-semibold text-xs border-2 border-white dark:border-gray-900">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M12 17.3l6.18 3.9-1.64-7.03L21.82 9.8l-7.12-.61L12 2.5l-2.7 6.69-7.12.61 5.28 4.37-1.64 7.03z" />
+                </svg>
+                {{ stars }}
+            </span>
+        </div>
+        <!-- Info usuario -->
+        <div class="text-center w-full">
+            <div class="text-lg font-bold text-gray-900 dark:text-white truncate">{{ name }}</div>
+            <div class="text-base font-mono text-blue-700 dark:text-blue-400 mb-1">{{ username }}</div>
+            <div class="text-xs text-gray-500 dark:text-gray-400 mb-2 truncate">{{ email }}</div>
+        </div>
+        <!-- Stats compactos y responsivos -->
+        <div class="w-full flex flex-wrap justify-center gap-3 mb-2">
+            <div class="flex flex-col items-center min-w-[72px]">
+                <span class="text-[1.07rem] font-semibold text-blue-600 dark:text-blue-400">{{ followers }}</span>
+                <span class="text-[.8rem] text-gray-500 dark:text-gray-400">Seguidores</span>
+            </div>
+            <div class="flex flex-col items-center min-w-[72px]">
+                <span class="text-[1.07rem] font-semibold text-purple-700 dark:text-purple-400">{{ following }}</span>
+                <span class="text-[.8rem] text-gray-500 dark:text-gray-400">Siguiendo</span>
+            </div>
+            <div class="flex flex-col items-center min-w-[72px]">
+                <span class="text-[1.07rem] font-semibold text-pink-600 dark:text-pink-400">{{ publicRepos }}</span>
+                <span class="text-[.8rem] text-gray-500 dark:text-gray-400">Repos</span>
+            </div>
+            <div class="flex flex-col items-center min-w-[92px]">
+                <span class="text-[.97rem] text-gray-800 dark:text-gray-200">{{ location || 'Sin ubicación' }}</span>
+                <span class="text-[.8rem] text-gray-500 dark:text-gray-400">Ubicación</span>
+            </div>
+        </div>
+        <div class="flex flex-col items-center w-full">
+            <span class="text-xs text-gray-600 dark:text-gray-400">{{ createAt ? ('Miembro desde ' + (createAt |
+                date:'MM/yyyy')) : '' }}</span>
+        </div>
+    </div>
+
+    <!-- Acciones inferiores (responsive) -->
+    <div class="w-full flex lg:flex-col items-center gap-2 mt-7">
+        <button (click)="toggleDarkMode()"
+            class="flex-1 lg:w-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 px-2.5 py-2 rounded shadow hover:bg-gray-300 dark:hover:bg-gray-600 transition flex items-center justify-center gap-2"
+            style="z-index:2;">
+            <svg *ngIf="!isDarkMode" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                    d="M10 2a.75.75 0 01.75.75v1a.75.75 0 01-1.5 0v-1A.75.75 0 0110 2zm0 13.5a4.5 4.5 0 100-9 4.5 4.5 0 000 9zm6.364-10.114a.75.75 0 011.06 1.061l-.707.707a.75.75 0 11-1.061-1.06l.708-.708zM16.25 10a.75.75 0 01.75.75v1a.75.75 0 01-1.5 0v-1a.75.75 0 01.75-.75zm-6.5 6.5a.75.75 0 01.75.75v1a.75.75 0 01-1.5 0v-1a.75.75 0 01.75-.75zM4.343 4.343a.75.75 0 011.06 0l.708.707a.75.75 0 11-1.06 1.06l-.708-.707a.75.75 0 010-1.06zM3.75 10a.75.75 0 01.75.75v1a.75.75 0 01-1.5 0v-1a.75.75 0 01.75-.75zm1.414 5.657a.75.75 0 011.06 1.061l-.707.707a.75.75 0 01-1.061-1.06l.708-.708z" />
+            </svg>
+            <svg *ngIf="isDarkMode" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707 8.003 8.003 0 1017.293 13.293z" />
+            </svg>
+            <span class="text-xs font-medium hidden md:block">{{ isDarkMode ? 'Light' : 'Dark' }}</span>
+        </button>
+        <button (click)="logout()"
+            class="flex-1 lg:w-full bg-red-500 hover:bg-red-700 text-white px-2.5 py-2 rounded shadow transition flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M13 16h-1v-4h-1m6 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2z" />
+            </svg>
+            <span class="text-xs font-medium hidden lg:block ">Cerrar sesión</span>
+        </button>
+    </div>
+
+    <!-- Loader o error -->
+    <div *ngIf="loading"
+        class="absolute inset-0 bg-white/80 dark:bg-[#0f141c]/80 flex items-center justify-center z-10">
+        <span class="text-gray-700 dark:text-gray-100 text-lg font-medium animate-pulse">Cargando perfil...</span>
+    </div>
+    <div *ngIf="errorMsg"
+        class="absolute bottom-4 left-4 right-4 text-red-600 text-sm bg-white/90 dark:bg-[#161b22]/90 rounded-xl px-4 py-2 shadow">
+        {{ errorMsg }}
+    </div>
+</div>

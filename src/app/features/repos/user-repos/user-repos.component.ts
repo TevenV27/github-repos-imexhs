@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { UserSidecarComponent } from '../user-sidecar/user-sidecar.component';
-
+import { UserSidecarComponent } from '../../../shared/components/user-sidecar/user-sidecar.component';
 import { ReposService } from '../repos.service';
 
 @Component({
@@ -14,10 +13,6 @@ import { ReposService } from '../repos.service';
 })
 export class UserReposComponent implements OnInit {
   username = '';
-  name = '';
-  email = '';
-  avatar = '';
-  stars = 0;
   repos: any[] = [];
   filteredRepos: any[] = [];
   languages: string[] = [];
@@ -64,67 +59,47 @@ export class UserReposComponent implements OnInit {
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
       this.username = params.get('username') || '';
-      this.fetchUserInfoAndRepos();
+      this.loadRepos();
     });
   }
 
-  async fetchUserInfoAndRepos() {
+  loadRepos() {
     this.errorMsg = '';
-    // 1. Obtiene perfil de usuario de GitHub
-    try {
-      const res = await fetch(`https://api.github.com/users/${this.username}`);
-      if (!res.ok) {
-        this.errorMsg = 'No se encontró el usuario de GitHub';
-        this.repos = [];
-        return;
-      }
-      const user = await res.json();
-      this.name = user.name || '';
-      this.email = user.email || '';
-      this.avatar = user.avatar_url || '';
-    } catch {
-      this.errorMsg = 'Error consultando usuario en GitHub';
-      return;
-    }
-
-    // 2. Trae repositorios
     this.reposService.getRepos(this.username).subscribe(res => {
       this.errorMsg = (res.length === 0) ? 'No hay repositorios o hubo un error' : '';
       this.repos = res;
-      this.stars = this.repos.reduce((sum, r) => sum + (r.stargazers_count || 0), 0);
       this.languages = [...new Set(this.repos.map(r => r.language).filter(Boolean))];
       this.applyFilters();
     });
-  }
-
-  async goToUser() {
-    this.searchError = '';
-    const username = this.searchUsername.trim();
-  
-    if (!username) return;
-  
-    // Llama a la API de GitHub para verificar si el usuario existe
-    try {
-      const res = await fetch(`https://api.github.com/users/${username}`);
-      if (!res.ok) {
-        this.searchError = 'El usuario no existe en GitHub.';
-        return;
-      }
-      // Si existe, redirecciona
-      this.router.navigate(['/user', username]);
-    } catch (e) {
-      this.searchError = 'Error de red de GitHub. Intenta de nuevo.';
-    }
-  }
-  clearSearchError() {
-    if (this.searchError) {
-      this.searchError = '';
-    }
   }
 
   applyFilters() {
     this.filteredRepos = this.repos
       .filter(repo => repo.name.toLowerCase().includes(this.nameFilter.toLowerCase()))
       .filter(repo => !this.languageFilter || repo.language === this.languageFilter);
+  }
+
+  async goToUser() {
+    this.searchError = '';
+    const username = this.searchUsername.trim();
+
+    if (!username) return;
+
+    try {
+      const res = await fetch(`https://api.github.com/users/${username}`);
+      if (!res.ok) {
+        this.searchError = 'El usuario no existe en GitHub.';
+        return;
+      }
+      this.router.navigate(['/user', username]);
+    } catch (e) {
+      this.searchError = 'Error de red de GitHub. Intenta de nuevo.';
+    }
+  }
+
+  clearSearchError() {
+    if (this.searchError) {
+      this.searchError = '';
+    }
   }
 }
