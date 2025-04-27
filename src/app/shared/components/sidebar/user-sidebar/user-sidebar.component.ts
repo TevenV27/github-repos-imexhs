@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../../core/services/auth.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { UserService } from './user.service';
 import { Router } from '@angular/router';
 
@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   selector: 'app-user-sidecar',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './user-sidecar.component.html',
+  templateUrl: './user-sidebar.component.html',
 })
 export class UserSidecarComponent implements OnInit, OnChanges {
   @Input() username = '';
@@ -22,6 +22,7 @@ export class UserSidecarComponent implements OnInit, OnChanges {
   followers = 0;
   following = 0;
   createAt = '';
+  bio = '';
 
   isDarkMode = false;
   loading = false;
@@ -53,6 +54,7 @@ export class UserSidecarComponent implements OnInit, OnChanges {
       this.loading = false;
       if (user && user.avatar_url) {
         this.name = user.name || '';
+        this.bio = user.bio || '';
         this.email = user.email || '';
         this.avatar = user.avatar_url || '';
         this.location = user.location || '';

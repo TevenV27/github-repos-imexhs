@@ -2,22 +2,30 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { UserSidecarComponent } from '../../../shared/components/user-sidecar/user-sidecar.component';
+import { UserSidecarComponent } from '../../../shared/components/sidebar/user-sidebar/user-sidebar.component';
+import { UserFilterComponent } from '../../../shared/components/filter/user-filter/user-filter.component';
+import { RepoCardComponent } from '../../../shared/components/cards/repo-card/repo-card.component';
 import { ReposService } from '../repos.service';
+import { RepoModel } from '../../../shared/models/repo.model';
 
 @Component({
   selector: 'app-user-repos',
   standalone: true,
-  imports: [CommonModule, FormsModule, UserSidecarComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    UserSidecarComponent,
+    UserFilterComponent,
+    RepoCardComponent
+  ],
   templateUrl: './user-repos.component.html',
 })
 export class UserReposComponent implements OnInit {
   username = '';
-  repos: any[] = [];
-  filteredRepos: any[] = [];
+  repos: RepoModel[] = [];
+  filteredRepos: RepoModel[] = [];
   languages: string[] = [];
   nameFilter = '';
-  searchUsername = '';
   searchError = '';
   languageFilter = '';
   errorMsg = '';
@@ -47,7 +55,6 @@ export class UserReposComponent implements OnInit {
     Svelte: '#ff3e00',
     ObjectiveC: '#438eff',
     'Objective-C': '#438eff',
-    // ...agrega más según necesites
   };
 
   constructor(
@@ -68,7 +75,7 @@ export class UserReposComponent implements OnInit {
     this.reposService.getRepos(this.username).subscribe(res => {
       this.errorMsg = '';
       this.repos = res;
-      this.languages = [...new Set(this.repos.map(r => r.language).filter(Boolean))];
+      this.languages = [...new Set(this.repos.map(r => r.language).filter((lang): lang is string => lang !== null))];
       this.applyFilters();
     });
   }
@@ -79,10 +86,9 @@ export class UserReposComponent implements OnInit {
       .filter(repo => !this.languageFilter || repo.language === this.languageFilter);
   }
 
-  async goToUser() {
+  // --- Nueva lógica de búsqueda usando UserFilterComponent
+  async onSearchUsername(username: string) {
     this.searchError = '';
-    const username = this.searchUsername.trim();
-
     if (!username) return;
 
     try {
