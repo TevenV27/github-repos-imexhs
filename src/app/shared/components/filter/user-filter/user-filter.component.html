@@ -1,15 +1,8 @@
-<div class="flex gap-2 w-full">
-    <input
-      type="text"
-      placeholder="Buscar usuario de GitHub..."
-      class="w-full md:w-2/3 lg:w-1/4 h-10 bg-transparent outline-none ring-1 ring-inset ring-gray-400/20 placeholder-gray-400 rounded-lg px-4 text-base text-gray-800 dark:text-white shadow-sm border-none focus:ring-1 focus:ring-inset focus:ring-gray-400/30 transition"
-      [(ngModel)]="username"
-      (input)="onInputChange()"
-      (keydown.enter)="onSubmit()"
-      autocomplete="off"
-    />
-  </div>
+<div class="flex flex-row gap-2 w-full ">
+    <input type="text" placeholder="Buscar usuario de GitHub..."
+      class="w-full md:w-2/3 lg:w-[350px] min-h-10 bg-transparent outline-none ring-1 ring-inset ring-gray-400/20 placeholder-gray-400 rounded-lg px-4 text-base text-gray-800 dark:text-white shadow-sm border-none focus:ring-1 focus:ring-inset focus:ring-gray-400/30 transition"
+      [(ngModel)]="username" (input)="onInputChange()" (keydown.enter)="onSubmit()" autocomplete="off" />
   <div *ngIf="error" class="text-red-500 text-sm font-semibold mt-2 px-2">
     {{ error }}
   </div>
-  
+</div>

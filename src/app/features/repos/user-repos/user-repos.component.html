@@ -3,22 +3,19 @@
   <div class="lg:h-screen w-full lg:w-[300px]">
     <app-user-sidecar [username]="username"></app-user-sidecar>
   </div>
-  <!-- Lista repositorios -->
-  <div class="flex-1 overflow-y-auto">
-    <!-- Filtro de usuario (username) -->
-    <div class="mb-6 py-3 px-10 ring-1 ring-gray-500/20 fixed z-10 bg-white w-full dark:bg-[#0f141c]">
-      <app-user-filter
-        [error]="searchError"
-        (search)="onSearchUsername($event)"
-        (clearError)="clearSearchError()"
-      ></app-user-filter>
+  <!-- Main -->
+  <div class="flex-1 flex flex-col min-h-screen overflow-hidden">
+    <!-- Filtro sticky arriba -->
+    <div class="py-3 px-2 md:px-6 lg:px-10 ring-1 ring-gray-500/20 dark:bg-[#0f141c]" role="search">
+      <app-user-filter [error]="searchError" (search)="onSearchUsername($event)"
+        (clearError)="clearSearchError()"></app-user-filter>
     </div>
-    <div class="px-10 py-6 mt-20">
-      <div class="mb-4 flex gap-4 flex-wrap">
+    <div class="flex-1 flex flex-col px-2 md:px-6 lg:px-10 py-4 md:py-6 mt-4 md:mt-8 overflow-y-auto">
+      <div class="mb-4 flex flex-col md:flex-row gap-2 md:gap-4 flex-wrap">
         <input type="text" placeholder="Filtrar por nombre" [(ngModel)]="nameFilter" (ngModelChange)="applyFilters()"
-          class="h-10 flex-1 bg-transparent outline-none ring-1 ring-inset ring-gray-500/20 placeholder-gray-400 rounded-lg px-4 text-base text-gray-800 dark:text-white border-none focus:ring-1 focus:ring-inset focus:ring-gray-500/20 transition"
+          class="min-h-10 flex-1 bg-transparent outline-none ring-1 ring-inset ring-gray-500/20 placeholder-gray-400 rounded-lg px-3 text-base text-gray-800 dark:text-white border-none focus:ring-1 focus:ring-inset focus:ring-gray-500/20 transition"
           autocomplete="off" />
-        <div class="relative w-56">
+        <div class="relative w-full md:w-56">
           <select [(ngModel)]="languageFilter" (ngModelChange)="applyFilters()"
             class="h-10 w-full bg-transparent outline-none ring-1 ring-inset ring-gray-500/20 text-base text-gray-800 dark:text-white placeholder-gray-400 rounded-lg px-2 pr-10 border-none focus:ring-1 focus:ring-inset focus:ring-gray-500/20 transition appearance-none">
             <option value="">Todos los lenguajes</option>
@@ -26,25 +23,55 @@
           </select>
           <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center">
             <svg class="w-4 h-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              <path fill-rule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clip-rule="evenodd" />
             </svg>
           </div>
         </div>
       </div>
-      <div *ngIf="errorMsg" class="text-red-500 font-medium mb-4">
-        {{ errorMsg }}
+      <div class="flex-1">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <app-repo-card *ngFor="let repo of paginatedRepos" [repo]="repo"
+            [languageColors]="languageColors"></app-repo-card>
+        </div>
+        <ng-template #noRepos>
+          <p class="text-gray-500 mt-10 text-center">No hay repositorios públicos para este usuario.</p>
+        </ng-template>
       </div>
-      <div *ngIf="filteredRepos.length > 0; else noRepos"
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <app-repo-card
-          *ngFor="let repo of filteredRepos"
-          [repo]="repo"
-          [languageColors]="languageColors">
-        </app-repo-card>
+      <div *ngIf="filteredRepos.length > 0"
+        class="sticky bottom-0 left-0 right-0 w-full  dark:bg-[#0f141c]/90 backdrop-blur flex justify-center items-center py-3 z-30 mt-8 transition">
+        <div class="flex items-center gap-2 w-full max-w-xs md:max-w-md lg:max-w-lg mx-auto justify-center">
+
+          <button (click)="prevPage()" [disabled]="currentPage === 1"
+            class="group flex items-center justify-center h-8 w-8 rounded-full border border-gray-300 dark:border-gray-700
+        bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-300
+        hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-950 dark:hover:text-blue-300
+        focus:outline-none focus:ring-2 focus:ring-blue-400 transition disabled:opacity-40 disabled:pointer-events-none shadow" [attr.aria-label]="'Página anterior'">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          <span
+            class="flex items-center gap-1 px-3 py-1 rounded-full bg-gray-200/90 dark:bg-gray-700/80 text-gray-800 dark:text-gray-100 font-semibold shadow select-none border border-gray-200 dark:border-gray-800 tracking-wide">
+            Página <span class="font-bold text-blue-700 dark:text-blue-300">{{ currentPage }}</span>
+            <span class="mx-1 text-gray-400 dark:text-gray-400">de</span>
+            <span class="font-bold text-gray-700 dark:text-gray-200">{{ totalPages }}</span>
+          </span>
+
+          <button (click)="nextPage()" [disabled]="currentPage === totalPages"
+            class="group flex items-center justify-center h-8 w-8 rounded-full border border-gray-300 dark:border-gray-700
+        bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-300
+        hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-950 dark:hover:text-blue-300
+        focus:outline-none focus:ring-2 focus:ring-blue-400 transition disabled:opacity-40 disabled:pointer-events-none shadow" [attr.aria-label]="'Página siguiente'">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
       </div>
-      <ng-template #noRepos>
-        <p class="text-gray-500 mt-10 text-center">No hay repositorios públicos para este usuario.</p>
-      </ng-template>
+
     </div>
   </div>
 </div>

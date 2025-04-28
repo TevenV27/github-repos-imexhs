@@ -22,13 +22,19 @@ import { RepoModel } from '../../../shared/models/repo.model';
 })
 export class UserReposComponent implements OnInit {
   username = '';
-  repos: RepoModel[] = [];
+  allRepos: RepoModel[] = [];
   filteredRepos: RepoModel[] = [];
+  paginatedRepos: RepoModel[] = [];
   languages: string[] = [];
   nameFilter = '';
   searchError = '';
   languageFilter = '';
   errorMsg = '';
+
+  // Paginación
+  currentPage = 1;
+  perPage = 9;
+  totalPages = 1;
 
   languageColors: { [key: string]: string } = {
     JavaScript: '#f1e05a',
@@ -66,27 +72,61 @@ export class UserReposComponent implements OnInit {
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
       this.username = params.get('username') || '';
-      this.loadRepos();
+      this.currentPage = 1;
+      this.fetchAllRepos();
     });
   }
 
-  loadRepos() {
+  fetchAllRepos() {
     this.errorMsg = '';
-    this.reposService.getRepos(this.username).subscribe(res => {
-      this.errorMsg = '';
-      this.repos = res;
-      this.languages = [...new Set(this.repos.map(r => r.language).filter((lang): lang is string => lang !== null))];
+    this.allRepos = [];
+    this.reposService.getAllRepos(this.username).then(repos => {
+      this.allRepos = repos || [];
+      this.languages = [...new Set(this.allRepos.map(r => r.language).filter((l): l is string => l !== null))];
+      this.applyFilters();
+    }).catch(() => {
+      this.errorMsg = 'Error al cargar repositorios.';
+      this.allRepos = [];
       this.applyFilters();
     });
   }
 
   applyFilters() {
-    this.filteredRepos = this.repos
-      .filter(repo => repo.name.toLowerCase().includes(this.nameFilter.toLowerCase()))
+    // Reset al cambiar filtro
+    this.currentPage = 1;
+    this.filteredRepos = this.allRepos
+      .filter(repo => repo.name?.toLowerCase().includes(this.nameFilter.toLowerCase()))
       .filter(repo => !this.languageFilter || repo.language === this.languageFilter);
+    this.totalPages = Math.max(1, Math.ceil(this.filteredRepos.length / this.perPage));
+    this.updatePaginatedRepos();
   }
 
-  // --- Nueva lógica de búsqueda usando UserFilterComponent
+  updatePaginatedRepos() {
+    const start = (this.currentPage - 1) * this.perPage;
+    const end = start + this.perPage;
+    this.paginatedRepos = this.filteredRepos.slice(start, end);
+  }
+
+  goToPage(page: number) {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.updatePaginatedRepos();
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePaginatedRepos();
+    }
+  }
+
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePaginatedRepos();
+    }
+  }
+
   async onSearchUsername(username: string) {
     this.searchError = '';
     if (!username) return;
