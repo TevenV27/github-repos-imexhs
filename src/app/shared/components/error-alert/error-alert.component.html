@@ -1,0 +1,19 @@
+<div
+  *ngIf="show && message"
+  class="flex items-center gap-2 px-4 py-2 max-w-xs md:max-w-md rounded-xl border-l-4 border-red-500 shadow-lg
+         bg-white/90 dark:bg-[#1a232c]/95
+         text-red-700 dark:text-red-300
+         font-semibold text-sm animate-fade-in-up
+         backdrop-blur-md"
+  style="box-shadow:0 4px 20px -8px #be123c55;"
+>
+  <svg class="w-5 h-5 flex-shrink-0 text-red-500 dark:text-red-400 animate-bounce" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4m0 4h.01m-6.938 4h13.856c1.054 0 1.658-1.14 1.116-2.048l-6.928-12c-.526-.912-1.706-.912-2.232 0l-6.928 12c-.542.908.062 2.048 1.116 2.048z"/>
+  </svg>
+  <span class="flex-1">{{ message }}</span>
+  <button (click)="handleClose()" class="ml-2 focus:outline-none text-red-400 hover:text-red-600 transition">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+  </button>
+</div>

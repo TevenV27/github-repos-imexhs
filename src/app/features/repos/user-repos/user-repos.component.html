@@ -4,7 +4,7 @@
     <app-user-sidecar [username]="username"></app-user-sidecar>
   </div>
   <!-- Main -->
-  <div class="flex-1 flex flex-col min-h-screen overflow-hidden">
+  <div class="flex-1 flex flex-col min-h-screen">
     <!-- Filtro sticky arriba -->
     <div class="py-3 px-2 md:px-6 lg:px-10 ring-1 ring-gray-500/20 dark:bg-[#0f141c]" role="search">
       <app-user-filter [error]="searchError" (search)="onSearchUsername($event)"

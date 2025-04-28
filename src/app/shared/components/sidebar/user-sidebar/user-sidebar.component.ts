@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../../core/services/auth.service';
 import { UserService } from './user.service';
 import { Router } from '@angular/router';
+import { ErrorAlertComponent } from '../../error-alert/error-alert.component';
 
 @Component({
   selector: 'app-user-sidecar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ErrorAlertComponent ],
   templateUrl: './user-sidebar.component.html',
 })
 export class UserSidecarComponent implements OnInit, OnChanges {
@@ -27,6 +28,8 @@ export class UserSidecarComponent implements OnInit, OnChanges {
   isDarkMode = false;
   loading = false;
   errorMsg = '';
+
+  avatarFallback = 'https://avatars.githubusercontent.com/u/583231?v=4';  // Image default
 
   constructor(
     private auth: AuthService,
