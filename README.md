@@ -3,6 +3,8 @@
 
 Este proyecto es una aplicación web desarrollada en **Angular 18** con autenticación vía **Firebase + GitHub OAuth**, que permite visualizar información detallada de cualquier usuario de GitHub y sus repositorios, con filtros, paginación y un diseño moderno (100% Tailwind CSS).
 
+[DEMO](https://github-repos-imexhs.vercel.app/)
+
 ## 🚀 Características
 
 - Login seguro con GitHub usando Firebase Authentication.
